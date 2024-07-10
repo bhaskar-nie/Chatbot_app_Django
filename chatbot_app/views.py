@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from chatterbot import ChatBot
-from chatterbot.trainers import ListTrainer
+from chatterbot.trainers import ListTrainer, ChatterBotCorpusTrainer
 from .models import *  # Ensure you are using your models correctly
 #from .custom_pos_tagger import CustomPOSTagger  # Import the custom POS tagger
 
@@ -12,9 +12,13 @@ from .models import *  # Ensure you are using your models correctly
 bot = ChatBot(
     'mychatBot',
     read_only=False,
-    logic_adapters=[
-        'chatterbot.logic.BestMatch'
-    ],
+    logic_adapters=[{
+        'import_path':'chatterbot.logic.BestMatch',
+        # 'default_response': 'Sorry, I don\'t have an answer to that',
+        # 'maximum_similarity_threshold':0.90,
+
+    }
+    ]
     # storage_adapter='chatterbot.storage.SQLStorageAdapter',
     # preprocessors=[
     #     'chatterbot.preprocessors.clean_whitespace'
@@ -32,9 +36,11 @@ list_to_train = [
     "I love answering your queries"
 ]
 
+chatterbotTrainer=ChatterBotCorpusTrainer(bot)
 # Train the bot
-list_trainer = ListTrainer(bot)
-list_trainer.train(list_to_train)
+# list_trainer = ListTrainer(bot)
+# list_trainer.train(list_to_train)
+chatterbotTrainer.train('chatterbot.corpus.english')
 
 # Homepage view
 def homepage(request):
