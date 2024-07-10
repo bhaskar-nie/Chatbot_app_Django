@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Chatbot App</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'chatbot_app/styles.css' %}">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>ChatBot APP</h1>
+      <div id="chatbot">
+          <p class="botText"><span>Hi there,</span></p>
+      </div>
+      <div id="userInput">
+          <input type="text" id="textinput" name="userMessage" placeholder="Type your message">
+          <button id="buttonInput">Send</button>
+      </div>
+    </div>
+
+    <script>
+      function getUserResponse(){
+        var userText=$('#textinput').val();//textInput is the id of the input search (not button)
+        var userHTML = "<p class='userText'>User: " + userText + "</p>";
+        //now we need to send the text received from the user to the 'hi there' section, and remove it from the search bar ,
+        //so that user can enter a new text
+        $('#textinput').val("");//empty the search bar
+        $('#chatbot').append(userHTML)//insert into div with id='chatbot'
+
+        
+        $.get('/chatbot_app/getResponse', {'userMessage':userText}).done(function(data){
+          //data received by done fn from getResponse path
+          var returnedMessage="<p class='botText'>Chatbot: "+data+"</p>";
+          $('#chatbot').append(returnedMessage)//insert into div with id='chatbot'
+        })
+
+      }
+
+      //make referenceto the send button to activate the above function
+      $('#buttonInput').click(function(){
+        getUserResponse();
+      });
+    </script>
+  </body>
+</html>
